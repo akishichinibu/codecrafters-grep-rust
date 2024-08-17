@@ -17,13 +17,22 @@ fn check_digit(c: char) -> bool {
     }
 }
 
+fn check_in_set(c: char, set: &str) -> bool {
+    set.contains(c)
+}
+
 fn match_pattern(input_line: &str, pattern: &str) -> bool {
     match pattern {
         r"\d" => return input_line.chars().any(check_digit),
         r"\w" => return input_line.chars().any(check_alphanumeric),
-        _ => match pattern.len() {
+        _ => if pattern.starts_with('[') && pattern.ends_with(']') {
+            let set = &pattern[1..pattern.len() - 1];
+            return input_line.chars().any(|c| check_in_set(c, set))
+        } else {
+            match pattern.len() {
                 1 => return input_line.contains(pattern),
                 _ => panic!("Unhandled pattern: {}", pattern)
+            }
         },
     }
 }
