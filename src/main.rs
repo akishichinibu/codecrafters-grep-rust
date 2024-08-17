@@ -2,11 +2,25 @@ use std::env;
 use std::io;
 use std::process;
 
-static DIGITALS: &'static[char; 10] = &['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+fn check_alphanumeric(c: char) -> bool {
+    match c {
+        'a'..='z' | 'A'..='Z' => true,
+        '_' => true,
+        _ => check_digit(c),
+    }
+}
+
+fn check_digit(c: char) -> bool {
+    match c {
+        '0'..='9' => true,
+        _ => false,
+    }
+}
 
 fn match_pattern(input_line: &str, pattern: &str) -> bool {
     match pattern {
-        r"\d" => return DIGITALS.iter().any(|r| { input_line.contains(*r) }),
+        r"\d" => return input_line.chars().any(check_digit),
+        r"\w" => return input_line.chars().any(check_alphanumeric),
         _ => match pattern.len() {
                 1 => return input_line.contains(pattern),
                 _ => panic!("Unhandled pattern: {}", pattern)
