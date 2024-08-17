@@ -25,9 +25,16 @@ fn match_pattern(input_line: &str, pattern: &str) -> bool {
     match pattern {
         r"\d" => return input_line.chars().any(check_digit),
         r"\w" => return input_line.chars().any(check_alphanumeric),
-        _ => if pattern.starts_with('[') && pattern.ends_with(']') {
-            let set = &pattern[1..pattern.len() - 1];
-            return input_line.chars().any(|c| check_in_set(c, set))
+        _ => if pattern.len() == 2 && pattern.starts_with('[') && pattern.ends_with(']') {
+           return false
+        } else if pattern.len() > 2 && pattern.starts_with('[') && pattern.ends_with(']') {
+            if pattern.chars().nth(1) == Some('^') {
+                let set = &pattern[2..pattern.len() - 1];
+                return !input_line.chars().any(|c| check_in_set(c, set))
+            } else {
+                let set = &pattern[1..pattern.len() - 1];
+                return input_line.chars().any(|c| check_in_set(c, set))
+            }
         } else {
             match pattern.len() {
                 1 => return input_line.contains(pattern),
